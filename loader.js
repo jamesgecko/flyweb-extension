@@ -1,6 +1,6 @@
 var code = function() {
-  navigator.publishServer = function(name) {
-    console.log(name);
+  navigator['publishServer'] = function(name) {
+    return Promise.reject(JSON.stringify({ error: 'Not implemented' }));
   };
 };
 var script = document.createElement('script');
