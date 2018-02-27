@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const json = JSON.parse(response);
       let services = json.services;
       for (const [name, service] of Object.entries(services)) {
-        serviceListEl.append(`<li>${name}</li>`);
+        serviceListEl.append(`<li><a href="http://${service.host}:${service.port}" target="_blank">${name}</a></li>`);
       }
     },
     error: () => {
