@@ -18,8 +18,9 @@
   ],
   "content_scripts": [
     {
+      "run_at": "document_start",
       "matches": ["http://*/*", "https://*/*"],
-      "js": ["api.js"]
+      "js": ["loader.js"]
     }
   ],
   "commands": {
