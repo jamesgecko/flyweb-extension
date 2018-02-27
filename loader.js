@@ -1,5 +1,5 @@
 var code = function() {
-  window.publishServer = function(name) {
+  navigator.publishServer = function(name) {
     console.log(name);
   };
 };
