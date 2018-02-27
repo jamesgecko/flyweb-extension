@@ -4,7 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
   $.ajax({
     url: 'http://localhost:8888',
     success: (response) => {
-      let services = response.services;
+      const json = JSON.parse(response);
+      let services = json.services;
       for (const [name, service] of Object.entries(services)) {
         serviceListEl.append(`<li>${name}</li>`);
       }
