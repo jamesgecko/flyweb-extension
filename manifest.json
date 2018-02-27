@@ -3,6 +3,9 @@
   "description" : "A half-baked implementation of the FlyWeb protocol.",
   "version": "1.0",
   "manifest_version": 2,
+  "icons": {
+    "48": "icon.png"
+  },
   "browser_action": {
     "default_popup": "popup.html",
     "default_icon": "icon.png",
