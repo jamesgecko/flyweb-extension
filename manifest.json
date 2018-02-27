@@ -9,7 +9,8 @@
     "default_title": "Click here!"
   },
   "permissions": [ 
-    "activeTab"
+    "activeTab",
+    "<all_urls>"
   ],
   "commands": {
     "_execute_browser_action": {
