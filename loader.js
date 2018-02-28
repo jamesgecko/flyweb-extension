@@ -1,20 +1,24 @@
 var code = function() {
-  navigator['publishServer'] = function(name) {
+  function postMessageToContentScript(type, data) {
     return new Promise((resolve, reject) => {
-      let data = { type: 'FlyWebExt-PublishServer', name };
+      data['type'] = type;
       window.postMessage(data, '*');
       const listener = (event) => {
-        if (event.source !== window) { return; }
-        if (event.data.type && event.data.type === 'FlyWebExt-PublishServer-Success') {
+        if (event.source !== window || !event.data.type) { return; }
+        if (event.data.type === `${type}-Success`) {
           window.removeEventListener('message', listener);
           resolve(event.data.response);
-        } else if (event.data.type && event.data.type === 'FlyWebExt-PublishServer-Error') {
+        } else if (event.data.type === `${type}-Error`) {
           window.removeEventListener('message', listener);
           reject(event.data.error);
         }
       };
       window.addEventListener('message', listener);
     });
+  }
+
+  navigator['publishServer'] = function(name) {
+    return postMessageToContentScript('FlyWebExt-PublishServer', { name })
   };
 };
 var script = document.createElement('script');
@@ -24,33 +28,39 @@ script.parentNode.removeChild(script);
 
 // ---
 
+function publishServer() {
+  $.ajax({
+    type: 'GET',
+    url: 'http://localhost:8888/publishServer',
+    success: (json) => {
+      const data = {
+        type: 'FlyWebExt-PublishServer-Success',
+        response: {
+          name: 'a name!', // TODO: Get this from MDNS server
+          uiUrl: undefined,
+          close: undefined, // () => {},
+          onclose: undefined,
+          onfetch: undefined,
+          onwebsocket: undefined
+        }
+      };
+      window.postMessage(data, '*'); // TODO: use event.origin?
+    },
+    error: (xhr, type) => {
+      window.postMessage({
+        type: 'FlyWebExt-PublishServer-Error',
+        error:  type
+      }, '*');
+    }
+  });
+}
+
 window.addEventListener('message', (event) => {
-  if (event.source !== window) { return; }
-  if (event.data.type && event.data.type === 'FlyWebExt-PublishServer') {
-    event.stopPropagation();
-    $.ajax({
-      type: 'GET',
-      url: 'http://localhost:8888/publishServer',
-      success: (json) => {
-        const data = {
-          type: 'FlyWebExt-PublishServer-Success',
-          response: {
-            name: 'a name!', // TODO: Get this from MDNS server
-            uiUrl: undefined,
-            close: undefined, // () => {},
-            onclose: undefined,
-            onfetch: undefined,
-            onwebsocket: undefined
-          }
-        };
-        window.postMessage(data, '*'); // TODO: use event.origin?
-      },
-      error: (xhr, type) => {
-        window.postMessage({
-          type: 'FlyWebExt-PublishServer-Error',
-          error:  type
-        }, '*');
-      }
-    });
+  if (event.source !== window || !event.data.type) { return; }
+  switch (event.data.type) {
+    case 'FlyWebExt-PublishServer':
+      event.stopPropagation();
+      publishServer();
+      break;
   }
 });
