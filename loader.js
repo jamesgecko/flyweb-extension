@@ -17,8 +17,14 @@ var code = function() {
     });
   }
 
+  function initServer(object) {
+    object.close = () => postMessageToContentScript('FlyWebExt-Close', {});
+    return object;
+  }
+
   navigator['publishServer'] = function(name) {
     return postMessageToContentScript('FlyWebExt-PublishServer', { name })
+      .then((response) => initServer(response));
   };
 };
 var script = document.createElement('script');
@@ -55,12 +61,20 @@ function publishServer() {
   });
 }
 
+function close() {
+  console.log('close called (content)');
+}
+
 window.addEventListener('message', (event) => {
   if (event.source !== window || !event.data.type) { return; }
   switch (event.data.type) {
     case 'FlyWebExt-PublishServer':
       event.stopPropagation();
       publishServer();
+      break;
+    case 'FlyWebExt-Close':
+      event.stopPropagation();
+      close();
       break;
   }
 });
