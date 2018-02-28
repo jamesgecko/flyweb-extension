@@ -3,17 +3,17 @@ var code = function() {
     return new Promise((resolve, reject) => {
       let data = { type: 'FlyWebExt-PublishServer', name };
       window.postMessage(data, '*');
-      window.addEventListener('message',
-        (event) => {
-          if (event.source !== window) { return; }
-          if (event.data.type && event.data.type === 'FlyWebExt-PublishServer-Success') {
-            resolve(event.data.response);
-          } else if (event.data.type && event.data.type === 'FlyWebExt-PublishServer-Error') {
-            reject(event.data.error);
-          }
-        },
-        { once: true }
-      );
+      const listener = (event) => {
+        if (event.source !== window) { return; }
+        if (event.data.type && event.data.type === 'FlyWebExt-PublishServer-Success') {
+          window.removeEventListener('message', listener);
+          resolve(event.data.response);
+        } else if (event.data.type && event.data.type === 'FlyWebExt-PublishServer-Error') {
+          window.removeEventListener('message', listener);
+          reject(event.data.error);
+        }
+      };
+      window.addEventListener('message', listener);
     });
   };
 };
@@ -27,6 +27,7 @@ script.parentNode.removeChild(script);
 window.addEventListener('message', (event) => {
   if (event.source !== window) { return; }
   if (event.data.type && event.data.type === 'FlyWebExt-PublishServer') {
+    event.stopPropagation();
     $.ajax({
       type: 'GET',
       url: 'http://localhost:8888/publishServer',
