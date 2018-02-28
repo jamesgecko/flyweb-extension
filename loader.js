@@ -32,7 +32,7 @@ window.addEventListener('message', (event) => {
       type: 'GET',
       url: 'http://localhost:8888/publishServer',
       success: (json) => {
-        window.postMessage({
+        const data = {
           type: 'FlyWebExt-PublishServer-Success',
           response: {
             name: 'a name!', // TODO: Get this from MDNS server
@@ -42,7 +42,8 @@ window.addEventListener('message', (event) => {
             onfetch: undefined,
             onwebsocket: undefined
           }
-        }, '*');
+        };
+        window.postMessage(data, '*'); // TODO: use event.origin?
       },
       error: (xhr, type) => {
         window.postMessage({
