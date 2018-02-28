@@ -20,7 +20,7 @@
     {
       "run_at": "document_start",
       "matches": ["http://*/*", "https://*/*"],
-      "js": ["loader.js"]
+      "js": ["loader.js", "zepto.min.js"]
     }
   ],
   "commands": {
