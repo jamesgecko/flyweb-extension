@@ -42,14 +42,12 @@ function publishServer(data) {
     success: (json) => {
       const data = {
         type: 'FlyWebExt-PublishServer-Success',
-        response: {
-          name: 'a name!', // TODO: Get this from MDNS server
-          uiUrl: undefined,
+        response: Object.assign(json, {
           close: undefined, // () => {},
-          onclose: undefined,
-          onfetch: undefined,
-          onwebsocket: undefined
-        }
+          onclose: undefined, // event
+          onfetch: undefined, // event
+          onwebsocket: undefined // event
+        })
       };
       window.postMessage(data, '*'); // TODO: use event.origin?
     },
