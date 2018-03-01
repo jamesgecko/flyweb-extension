@@ -34,10 +34,11 @@ script.parentNode.removeChild(script);
 
 // ---
 
-function publishServer() {
+function publishServer(data) {
   $.ajax({
-    type: 'GET',
+    type: 'POST',
     url: 'http://localhost:8888/publishServer',
+    data: data,
     success: (json) => {
       const data = {
         type: 'FlyWebExt-PublishServer-Success',
@@ -70,7 +71,7 @@ window.addEventListener('message', (event) => {
   switch (event.data.type) {
     case 'FlyWebExt-PublishServer':
       event.stopPropagation();
-      publishServer();
+      publishServer(event.data);
       break;
     case 'FlyWebExt-Close':
       event.stopPropagation();
